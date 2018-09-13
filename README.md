@@ -107,4 +107,13 @@ we loop through each of them to find consumer and provider of the same transacti
 
 This class is the one responsible for running the application.
 
-It contains the `lunchMigration()` method which is annotated with `@Scheduled(cron = "${batch.archivingCron}")`. This annotation is the one that tell spring batch when to run the method. And since it has the placeholder "${batch.archivingCron}", this means that it reads the values from the application.yml
+It contains the `lunchMigration()` method which is annotated with `@Scheduled(cron = "${batch.archivingCron}")`. This annotation is the one that tell spring batch when to run the method. And since it has the placeholder `"${batch.archivingCron}"`, this means that it reads the values from the application.yml
+
+the  `"${batch.archivingCron}"` in the application.yml contains the value : 0 * * * * * which according to the syntax `second, minute, hour, day of month, month, day(s) of week` means that I want the batch to run every minute.
+
+More info about @Scheduled(cron = xx) syntax can be found [here](https://stackoverflow.com/questions/26147044/spring-cron-expression-for-every-day-101am) 
+
+
+## Running the application
+
+To run the application, you just have to specify in the application.yml the address for you database as well as its name. You can do that by editing the `db:x` where x is {host, port, name, username, password }
