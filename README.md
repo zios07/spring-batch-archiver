@@ -111,7 +111,7 @@ It contains the `lunchMigration()` method which is annotated with `@Scheduled(cr
 
 the  `"${batch.archivingCron}"` in the application.yml contains the value : 0 * * * * * which according to the syntax `second, minute, hour, day of month, month, day(s) of week` means that I want the batch to run every minute.
 
-More info about @Scheduled(cron = xx) syntax can be found [here](https://stackoverflow.com/questions/26147044/spring-cron-expression-for-every-day-101am) 
+More info about `@Scheduled(cron = xx)` syntax can be found [here](https://stackoverflow.com/questions/26147044/spring-cron-expression-for-every-day-101am) 
 
 
 ## Running the application
