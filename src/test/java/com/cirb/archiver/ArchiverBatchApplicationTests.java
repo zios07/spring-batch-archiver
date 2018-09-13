@@ -2,6 +2,7 @@ package com.cirb.archiver;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Calendar;
 import java.util.Date;
 
 import org.junit.Test;
@@ -33,18 +34,31 @@ public class ArchiverBatchApplicationTests {
 	@Test
 	public void contextLoads() {
 		Consumer consumer = new Consumer("aaa", "aa", "aaaa", ",bbbb", "bbbbb", "zeazeaze", "eazeae", "pjarlejk",
-				"opiezrpzj", "oijjn", "aezlkaje", "amezkzae", "aaa");
+				"opiezrpzj", "oijjn", "aezlkaje", "amezkzae", "aaa", new Date());
 		Provider provider = new Provider("amezkzae", "amzekazmek", "aaa", "aa", "aaaa", ",bbbb", "bbbbb", "zeazeaze",
-				"eazeae", "pjarlejk", "opiezrpzj", "oijjn", "aaa");
+				"eazeae", "pjarlejk", "opiezrpzj", "oijjn", "aaa", new Date());
 
-		
+		Calendar oneYearAgo = Calendar.getInstance();
+		oneYearAgo.set(oneYearAgo.get(Calendar.YEAR) - 2, oneYearAgo.get(Calendar.MONTH),
+				oneYearAgo.get(Calendar.DATE));
+
+		Consumer consumer2 = new Consumer("aaa", "aa", "aaaa", ",bbbb", "bbbbb", "zeazeaze", "eazeae", "pjarlejk",
+				"opiezrpzj", "oijjn", "aezlkaje", "amezkzae", "xxxx", oneYearAgo.getTime());
+		Provider provider2 = new Provider("amezkzae", "amzekazmek", "aaa", "aa", "aaaa", ",bbbb", "bbbbb", "zeazeaze",
+				"eazeae", "pjarlejk", "opiezrpzj", "oijjn", "xxxx", oneYearAgo.getTime());
+
 		consumer = this.consumerRepository.save(consumer);
 		provider = this.providerRepository.save(provider);
-		
+
+		consumer2 = this.consumerRepository.save(consumer2);
+		provider2 = this.providerRepository.save(provider2);
 
 		Archive archive = new Archive(new Date(), consumer, provider);
 		this.archiveRepository.save(archive);
-		
+
+		Archive archive2 = new Archive(new Date(), consumer2, provider2);
+		this.archiveRepository.save(archive2);
+
 		assertEquals(1, 1);
 	}
 

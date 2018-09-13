@@ -7,12 +7,9 @@ db:
 
 batch:
   archivingCron: 0 * * * * *
-  output-directory: csv/outputs/archives.all.csv
+  output-directory: json/outputs/archives.json
 
 spring:
-  devtools:
-    restart:
-      enabled: false
   batch:
     initialize-schema: always
   datasource:
