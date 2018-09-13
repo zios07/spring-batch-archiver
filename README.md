@@ -1,6 +1,6 @@
 # Batch d'archivage
 
-Hi soukaa, pardon me if there is any typo cauze it's 2pm :P . Home you understand the main concept of spring batch, if my explanation is not clear, you are free to ask me anything :D
+Hi soukaa, pardon me if there is any typo cauze it's 2am :P . Home you understand the main concept of spring batch, if my explanation is not clear, you are free to ask me anything :D
 
 ## Main classes
 
