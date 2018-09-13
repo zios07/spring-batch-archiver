@@ -1,5 +1,7 @@
 package com.cirb.archiver.domain;
 
+import java.util.Date;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -36,6 +38,8 @@ public class Consumer {
 	private String responseTimeStamp;
 
 	private String transactionId;
+	
+	private Date externalTimestamp;
 
 	public Consumer() {
 		super();
@@ -43,7 +47,8 @@ public class Consumer {
 
 	public Consumer(String action, String applicationId, String endPoint, String error,
 			String externalMessageId, String keyType, String keyValue, String legalContent, String request,
-			String requestTimeStamp, String response, String responseTimeStamp, String transactionId) {
+			String requestTimeStamp, String response, String responseTimeStamp, String transactionId,
+			Date externalTimestamp) {
 		super();
 		this.action = action;
 		this.applicationId = applicationId;
@@ -58,6 +63,7 @@ public class Consumer {
 		this.response = response;
 		this.responseTimeStamp = responseTimeStamp;
 		this.transactionId = transactionId;
+		this.externalTimestamp = externalTimestamp;
 	}
 
 	public Long getId() {
@@ -170,6 +176,14 @@ public class Consumer {
 
 	public void setTransactionId(String transactionId) {
 		this.transactionId = transactionId;
+	}
+
+	public Date getExternalTimestamp() {
+		return externalTimestamp;
+	}
+
+	public void setExternalTimestamp(Date externalTimestamp) {
+		this.externalTimestamp = externalTimestamp;
 	}
 
 }
