@@ -7,8 +7,12 @@ db:
 
 batch:
   archivingCron: 0 * * * * *
+  output-directory: csv/outputs/archives.all.csv
 
 spring:
+  devtools:
+    restart:
+      enabled: false
   batch:
     initialize-schema: always
   datasource:
@@ -23,3 +27,6 @@ spring:
     properties:
         hibernate:
             dialect: org.hibernate.dialect.PostgreSQL94Dialect
+            jdbc:
+              lob:
+                non_contextual_creation: true

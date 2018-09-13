@@ -1,5 +1,8 @@
 package com.cirb.archiver.batch;
 
+import java.io.IOException;
+import java.io.Writer;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.batch.core.Job;
@@ -9,10 +12,13 @@ import org.springframework.batch.core.configuration.annotation.StepBuilderFactor
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.step.tasklet.Tasklet;
+import org.springframework.batch.item.ExecutionContext;
+import org.springframework.batch.item.file.FlatFileHeaderCallback;
 import org.springframework.batch.item.file.FlatFileItemWriter;
 import org.springframework.batch.item.file.transform.BeanWrapperFieldExtractor;
 import org.springframework.batch.item.file.transform.DelimitedLineAggregator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.FileSystemResource;
@@ -26,6 +32,9 @@ import com.cirb.archiver.repositories.ProviderRepository;
 public class ArchivingBatch {
 
 	protected final Log logger = LogFactory.getLog(getClass());
+
+	@Value("${batch.output-directory}")
+	private String outputDirectory;
 
 	@Autowired
 	private JobBuilderFactory jobBuilderFactory;
@@ -59,20 +68,32 @@ public class ArchivingBatch {
 	@Bean
 	@StepScope
 	public FlatFileItemWriter<Archive> writer() {
-		FlatFileItemWriter<Archive> writer = new FlatFileItemWriter<Archive>();
-		writer.setResource(new FileSystemResource("csv/outputs/domain.all.csv"));
+		FlatFileItemWriter<Archive> writer = new FlatFileItemWriter<>();
+		writer.setResource(new FileSystemResource(outputDirectory));
 		writer.setAppendAllowed(true);
+		writer.setSaveState(true);
+		writer.open(new ExecutionContext());
+		writer.setHeaderCallback(new FlatFileHeaderCallback() {
+
+			@Override
+			public void writeHeader(Writer writer) throws IOException {
+				writer.write("id, date, consumer.action, consumer.applicationId, consumer.endPoint, consumer.error,"
+						+ "consumer.externalMessageId, consumer.keyType, consumer.keyValue, consumer.legalContent");
+			}
+		});
 		writer.setLineAggregator(new DelimitedLineAggregator<Archive>() {
+
 			{
 				setDelimiter(",");
 				setFieldExtractor(new BeanWrapperFieldExtractor<Archive>() {
 					{
-						// setNames(new String[] { "id", "action", "applicationId", "endPoint", "error",
-						// "externalMessageId", "keyType", "keyValue", "legalContent" });
-						setNames(new String[] { "id", "date", "consumer", "provider" });
+						setNames(new String[] { "id", "date", "consumer.action", "consumer.applicationId",
+								"consumer.endPoint", "consumer.error", "consumer.externalMessageId", "consumer.keyType",
+								"consumer.keyValue", "consumer.legalContent" });
 					}
 				});
 			}
+		
 		});
 		return writer;
 	}
