@@ -1,10 +1,12 @@
 # Batch d'archivage
 
+Hi soukaa, pardon me if there is any typo cauze it's 2pm :P . Home you understand the main concept of spring batch, if my explanation is not clear, you are free to ask me anything :D
+
 ## Main classes
 
 ### ArchivingBatch : 
 
-Configuring the 'postgresToCsv' tasklet which will read all consumer and provider records from the database, and will use the 'itemReader' (see below) to write those records to the csv file located in the 'outputDirectory' which can be specified in the application.yml file (because it uses the placeholder ${"batch.output-directory"}).
+Configuring the `postgresToCsv` tasklet which will read all consumer and provider records from the database, and will use the `itemWriter` (see below) to write those records to the csv file located in the `outputDirectory` which can be specified in the `application.yml` file (because it uses the placeholder `${"batch.output-directory"})`.
 
 ```
 @Bean
