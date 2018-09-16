@@ -28,13 +28,16 @@ public class ArchiverBatchApplication {
 
 	private final Job archivingJob;
 
+	private final Job encryptionJob;
+	
 	private final JobLauncher jobLauncher;
 
 	@Autowired
-	public ArchiverBatchApplication(Job archivingJob, JobLauncher jobLauncher) {
+	public ArchiverBatchApplication(Job archivingJob, Job encryptionJob, JobLauncher jobLauncher) {
 		super();
 		this.archivingJob = archivingJob;
 		this.jobLauncher = jobLauncher;
+		this.encryptionJob = encryptionJob;
 	}
 
 	public static void main(String[] args) {
@@ -47,9 +50,10 @@ public class ArchiverBatchApplication {
 
 		logger.info("***************** Starting Archiving Batch *****************");
 
-		JobParameters params = new JobParametersBuilder().addLong("commit.interval", 100L).addDate("date", new Date())
+		JobParameters params = new JobParametersBuilder().addDate("date", new Date())
 				.toJobParameters();
 		jobLauncher.run(archivingJob, params);
+		jobLauncher.run(encryptionJob, params);
 		logger.info("***************** Archiving Completed! *****************");
 	}
 	

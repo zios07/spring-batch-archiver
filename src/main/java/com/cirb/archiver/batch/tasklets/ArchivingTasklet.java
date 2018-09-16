@@ -18,7 +18,7 @@ import com.cirb.archiver.domain.Provider;
 import com.cirb.archiver.repositories.ConsumerRepository;
 import com.cirb.archiver.repositories.ProviderRepository;
 
-public class PostgresToJson implements Tasklet {
+public class ArchivingTasklet implements Tasklet {
 
 	private ConsumerRepository consumerRepository;
 	
@@ -27,7 +27,7 @@ public class PostgresToJson implements Tasklet {
 	private ItemWriter<Archive> itemWriter;
 
 	@Autowired
-	public PostgresToJson(ConsumerRepository consumerRepository, ProviderRepository providerRepository, ItemWriter<Archive> itemWriter) {
+	public ArchivingTasklet(ConsumerRepository consumerRepository, ProviderRepository providerRepository, ItemWriter<Archive> itemWriter) {
 		this.consumerRepository = consumerRepository;
 		this.providerRepository = providerRepository;
 		this.itemWriter = itemWriter;
@@ -39,14 +39,20 @@ public class PostgresToJson implements Tasklet {
 		oneYearAgo.set(oneYearAgo.get(Calendar.YEAR) - 1, oneYearAgo.get(Calendar.MONTH), oneYearAgo.get(Calendar.DATE));
 		List<Consumer> consumers = consumerRepository.findByExternalTimestampLessThanEqual(oneYearAgo.getTime());
 		List<Provider> providers = providerRepository.findByExternalTimestampLessThanEqual(oneYearAgo.getTime());
+		
+		int i  = 1;
 		List<Archive> archives = new ArrayList<>();
 		
 		for(Consumer consumer : consumers) {
 			for(Provider provider : providers) {
 				if(consumer.getTransactionId() != null && consumer.getTransactionId().equals(provider.getTransactionId())) {
 					Archive archive = new Archive(new Date(), consumer, provider);
+					archive.setId(Long.valueOf(i));
 					archives.add(archive);
+					i++;
 				}
+				if( i == 3 )
+					break;
 			}
 		}
 		this.itemWriter.write(archives);

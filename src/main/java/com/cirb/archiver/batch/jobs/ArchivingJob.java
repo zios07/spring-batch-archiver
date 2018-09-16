@@ -1,4 +1,4 @@
-package com.cirb.archiver.batch;
+package com.cirb.archiver.batch.jobs;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -17,14 +17,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.FileSystemResource;
 
-import com.cirb.archiver.batch.tasklets.PostgresToJson;
+import com.cirb.archiver.batch.tasklets.ArchivingTasklet;
 import com.cirb.archiver.batch.utils.ArchiveJsonItemAggregator;
 import com.cirb.archiver.domain.Archive;
 import com.cirb.archiver.repositories.ConsumerRepository;
 import com.cirb.archiver.repositories.ProviderRepository;
 
 @Configuration
-public class ArchivingBatch {
+public class ArchivingJob {
 
 	protected final Log logger = LogFactory.getLog(getClass());
 
@@ -45,18 +45,18 @@ public class ArchivingBatch {
 
 	@Bean
 	@StepScope
-	protected Tasklet postgresToJson() {
-		return new PostgresToJson(consumerRepository, providerRepository, writer());
+	protected Tasklet archivingTasklet() {
+		return new ArchivingTasklet(consumerRepository, providerRepository, writer());
 	}
 
 	@Bean
-	protected Step postgresToJsonStep() {
-		return stepBuilderFactory.get("postgresToJsonStep").tasklet(postgresToJson()).build();
+	protected Step archivingTaskletStep() {
+		return stepBuilderFactory.get("archivingTaskletStep").tasklet(archivingTasklet()).build();
 	}
 
 	@Bean
 	public Job administrationJob() {
-		return jobBuilderFactory.get("archivingJob").incrementer(new RunIdIncrementer()).start(postgresToJsonStep())
+		return jobBuilderFactory.get("archivingJob").incrementer(new RunIdIncrementer()).start(archivingTaskletStep())
 				.build();
 	}
 
