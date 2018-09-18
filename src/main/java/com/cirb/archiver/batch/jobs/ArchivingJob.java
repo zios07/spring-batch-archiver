@@ -55,7 +55,7 @@ public class ArchivingJob {
 	}
 
 	@Bean
-	public Job administrationJob() {
+	public Job archiverJob() {
 		return jobBuilderFactory.get("archivingJob").incrementer(new RunIdIncrementer()).start(archivingTaskletStep())
 				.build();
 	}

@@ -26,18 +26,18 @@ public class ArchiverBatchApplication {
 
 	protected final Log logger = LogFactory.getLog(getClass());
 
-	private final Job archivingJob;
+	private final Job archiverJob;
 
-	private final Job encryptionJob;
+	private final Job encryptionsJob;
 	
 	private final JobLauncher jobLauncher;
 
 	@Autowired
-	public ArchiverBatchApplication(Job archivingJob, Job encryptionJob, JobLauncher jobLauncher) {
+	public ArchiverBatchApplication(Job archiverJob, Job encryptionsJob, JobLauncher jobLauncher) {
 		super();
-		this.archivingJob = archivingJob;
+		this.archiverJob = archiverJob;
 		this.jobLauncher = jobLauncher;
-		this.encryptionJob = encryptionJob;
+		this.encryptionsJob = encryptionsJob;
 	}
 
 	public static void main(String[] args) {
@@ -52,8 +52,8 @@ public class ArchiverBatchApplication {
 
 		JobParameters params = new JobParametersBuilder().addDate("date", new Date())
 				.toJobParameters();
-		jobLauncher.run(archivingJob, params);
-		jobLauncher.run(encryptionJob, params);
+		jobLauncher.run(archiverJob, params);
+		jobLauncher.run(encryptionsJob, params);
 		logger.info("***************** Archiving Completed! *****************");
 	}
 	
