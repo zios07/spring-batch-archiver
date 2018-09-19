@@ -7,20 +7,13 @@ import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
-import org.springframework.batch.item.ExecutionContext;
-import org.springframework.batch.item.ItemProcessor;
-import org.springframework.batch.item.ItemReader;
-import org.springframework.batch.item.file.FlatFileItemWriter;
+import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.FileSystemResource;
 
-import com.cirb.archiver.batch.utils.ArchiveJsonItemAggregator;
-import com.cirb.archiver.batch.utils.ArchiveJsonLineMapper;
-import com.cirb.archiver.batch.utils.CustomFileItemReader;
-import com.cirb.archiver.domain.Archive;
+import com.cirb.archiver.batch.tasklets.EncryptionTasklet;
 
 @Configuration
 public class ArchivingJob {
@@ -59,40 +52,17 @@ public class ArchivingJob {
 	 * 
 	 * 
 	 */
-	
+
+	@Bean
+	protected Tasklet encryptionTasklet() {
+		return new EncryptionTasklet(jsonDirectory, encryptionDirectory);
+	}
 	
 	@Bean
 	protected Step encryptingStep() {
-		return stepBuilderFactory.get("encryptingStep")
-				.<Archive, Archive>chunk(1)
-				.reader(jsonReader())
-				.writer(jsonItemWriter())
-				.processor(jsonProcessor())
-				.build();
+		return stepBuilderFactory.get("encryptingStep").tasklet(encryptionTasklet()).build();
 	}
 	
-	@Bean
-	public ItemReader<Archive> jsonReader() {
-		CustomFileItemReader<Archive> reader = new CustomFileItemReader<>();
-		reader.setResource(jsonDirectory);
-		reader.setLineMapper(new ArchiveJsonLineMapper());
-		return reader;
-	}
-	
-	public ItemProcessor<Archive, Archive> jsonProcessor() {
-		ItemProcessor<Archive, Archive> processor = new JsonItemProcessor();
-		return processor;
-	}
-	
-	@Bean
-	public FlatFileItemWriter<Archive> jsonItemWriter() {
-		FlatFileItemWriter<Archive> writer = new FlatFileItemWriter<>();
-		writer.setResource(new FileSystemResource(encryptionDirectory));
-		writer.setSaveState(true);
-		writer.open(new ExecutionContext());
-		writer.setLineAggregator(new ArchiveJsonItemAggregator());
-		return writer;
-	}
 
 	
 	
@@ -126,14 +96,5 @@ public class ArchivingJob {
 //		return writer;
 //	}
 	
-	static class JsonItemProcessor implements ItemProcessor<Archive, Archive> {
-
-		@Override
-		public Archive process(Archive item) throws Exception {
-			// TODO Auto-generated method stub
-			return null;
-		}
-		
-	}
 	
 }

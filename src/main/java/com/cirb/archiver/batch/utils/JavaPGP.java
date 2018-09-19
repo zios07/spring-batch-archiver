@@ -34,7 +34,7 @@ public final class JavaPGP {
         KeyPair pair = generateKeyPair();
         PrivateKey privateKey = pair.getPrivate();
 
-        Cipher cipher = Cipher.getInstance("RSA");
+        Cipher cipher = Cipher.getInstance("AES");
         cipher.init(Cipher.ENCRYPT_MODE, privateKey);
 
         byte[] encryptedMessage = cipher.doFinal(message);
@@ -68,7 +68,7 @@ public final class JavaPGP {
         byte[] encyptedPublicKey = new byte[keyLength];
         buffer.get(encyptedPublicKey);
 
-        Cipher cipher = Cipher.getInstance("RSA");
+        Cipher cipher = Cipher.getInstance("AES");
         cipher.init(Cipher.DECRYPT_MODE, key);
 
         byte[] encodedPublicKey = cipher.doFinal(encyptedPublicKey);
@@ -84,14 +84,14 @@ public final class JavaPGP {
 
 
     public static PublicKey getPublicKey(byte[] encodedKey) throws NoSuchAlgorithmException, InvalidKeySpecException {
-        KeyFactory factory = KeyFactory.getInstance("RSA");
+        KeyFactory factory = KeyFactory.getInstance("AES");
         X509EncodedKeySpec encodedKeySpec = new X509EncodedKeySpec(encodedKey);
         return factory.generatePublic(encodedKeySpec);
     }
 
     public static KeyPair generateKeyPair() throws NoSuchAlgorithmException {
-        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-        keyPairGenerator.initialize(1024, SecureRandom.getInstance("SHA1PRNG"));
+        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("AES");
+        keyPairGenerator.initialize(2048, SecureRandom.getInstance("SHA1PRNG"));
         return keyPairGenerator.generateKeyPair();
     }
 
