@@ -7,8 +7,8 @@ db:
 
 batch:
   archivingCron: 0 * * * * *
-  json-directory: json/outputs/archives.json
-  encryption-directory: json/encrypted/archives.json
+  json-directory: archives/archives.json
+  encryption-directory: archives/archives-encrypted.json
 
 spring:
   batch:
