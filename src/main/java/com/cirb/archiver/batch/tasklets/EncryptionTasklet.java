@@ -26,6 +26,7 @@ public class EncryptionTasklet implements Tasklet {
 		File file = new File(path);
 		byte[] content = FileUtils.readFileToByteArray(file);
 		byte[] encryptedContent = JavaPGP.encrypt(content, JavaPGP.generateKeyPair().getPublic());
+		FileUtils.writeByteArrayToFile(new File(outputDirectory), encryptedContent);
 		return RepeatStatus.FINISHED;
 	}
 
