@@ -26,31 +26,32 @@ public class ArchiverBatchApplication {
 
 	protected final Log logger = LogFactory.getLog(getClass());
 
-	private final Job archivingJob;
+	private final Job archiverJob;
 
 	private final JobLauncher jobLauncher;
 
 	@Autowired
-	public ArchiverBatchApplication(Job archivingJob, JobLauncher jobLauncher) {
+	public ArchiverBatchApplication(Job archiverJob, JobLauncher jobLauncher) {
 		super();
-		this.archivingJob = archivingJob;
+		this.archiverJob = archiverJob;
 		this.jobLauncher = jobLauncher;
 	}
 
 	public static void main(String[] args) {
 		SpringApplication.run(ArchiverBatchApplication.class, args);
 	}
-	
+		
 	@Scheduled(cron = "${batch.archivingCron}")
 	public void launchMigration() throws JobExecutionAlreadyRunningException, JobRestartException,
 			JobInstanceAlreadyCompleteException, JobParametersInvalidException {
 
-		logger.info("***************** Starting Archiving Batch *****************");
+		logger.info("***************** Starting Archiving Job *****************");
 
-		JobParameters params = new JobParametersBuilder().addLong("commit.interval", 100L).addDate("date", new Date())
+		JobParameters params = new JobParametersBuilder().addDate("date", new Date())
 				.toJobParameters();
-		jobLauncher.run(archivingJob, params);
+		jobLauncher.run(archiverJob, params);
 		logger.info("***************** Archiving Completed! *****************");
+		
 	}
 	
 	

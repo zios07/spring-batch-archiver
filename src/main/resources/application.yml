@@ -1,13 +1,14 @@
 db:
   host: localhost
   port: 5432
-  name: archives
+  name: pgisrauditlog
   username: postgres
   password: postgres
 
 batch:
   archivingCron: 0 * * * * *
-  output-directory: json/outputs/archives.json
+  json-directory: archives/archives.json
+  encryption-directory: archives/archives-encrypted.json
 
 spring:
   batch:

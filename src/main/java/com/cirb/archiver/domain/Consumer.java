@@ -5,8 +5,12 @@ import java.util.Date;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 @Entity
+@Table(name = "consumer_audit")
 public class Consumer {
 
 	@Id
@@ -39,6 +43,7 @@ public class Consumer {
 
 	private String transactionId;
 	
+	@Temporal(TemporalType.DATE)
 	private Date externalTimestamp;
 
 	public Consumer() {
