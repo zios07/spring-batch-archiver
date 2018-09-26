@@ -47,8 +47,7 @@ public class ArchivingTasklet implements Tasklet {
 			for(Provider provider : providers) {
 				if(consumer.getTransactionId() != null && consumer.getTransactionId().equals(provider.getTransactionId())) {
 					Archive archive = new Archive(new Date(), consumer, provider);
-					// TODO Dynamic ID !
-					archive.setId(Long.valueOf(i));
+					archive.setId(System.currentTimeMillis());
 					archives.add(archive);
 					i++;
 				}

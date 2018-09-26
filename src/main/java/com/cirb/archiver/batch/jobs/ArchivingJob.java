@@ -1,5 +1,8 @@
 package com.cirb.archiver.batch.jobs;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.batch.core.Job;
@@ -29,11 +32,8 @@ public class ArchivingJob {
 
 	protected final Log logger = LogFactory.getLog(getClass());
 
-	@Value("${batch.json-directory}")
-	private String jsonDirectory;
-
-	@Value("${batch.encryption-directory}")
-	private String encryptionDirectory;
+	@Value("${batch.archive-directory}")
+	private String archiveDirectory;
 
 	@Autowired
 	private JobBuilderFactory jobBuilderFactory;
@@ -59,7 +59,7 @@ public class ArchivingJob {
 
 	@Bean
 	protected Tasklet encryptionTasklet() {
-		return new EncryptionTasklet(jsonDirectory, encryptionDirectory);
+		return new EncryptionTasklet(archiveDirectory);
 	}
 
 	@Bean
@@ -82,7 +82,9 @@ public class ArchivingJob {
 	@StepScope
 	public FlatFileItemWriter<Archive> writer() {
 		FlatFileItemWriter<Archive> writer = new FlatFileItemWriter<>();
-		writer.setResource(new FileSystemResource(jsonDirectory));
+		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+		String date = sdf.format(new Date());	
+		writer.setResource(new FileSystemResource(archiveDirectory + "archive_" + date + ".json"));
 		writer.setSaveState(true);
 		writer.open(new ExecutionContext());
 		writer.setLineAggregator(new ArchiveJsonItemAggregator());
