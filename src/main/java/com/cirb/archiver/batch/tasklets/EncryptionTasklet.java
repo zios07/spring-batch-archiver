@@ -13,20 +13,18 @@ import com.cirb.archiver.batch.utils.JavaPGP;
 public class EncryptionTasklet implements Tasklet {
 
 	private String path;
-	
-	private String outputDirectory;
-	
-	public EncryptionTasklet(String path, String outputDirectory) {
+
+	public EncryptionTasklet(String path) {
 		this.path = path;
-		this.outputDirectory = outputDirectory;
 	}
 	
 	@Override
 	public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
-		File file = new File(path);
+		File file = new File(path + "/archive_24-09-2018.json");
 		byte[] content = FileUtils.readFileToByteArray(file);
 		byte[] encryptedContent = JavaPGP.encrypt(content, JavaPGP.generateKeyPair().getPublic());
-		FileUtils.writeByteArrayToFile(new File(outputDirectory), encryptedContent);
+		FileUtils.writeByteArrayToFile(new File(path + "/encrypted/" + file.getName()), encryptedContent);
+		file.delete();
 		return RepeatStatus.FINISHED;
 	}
 
