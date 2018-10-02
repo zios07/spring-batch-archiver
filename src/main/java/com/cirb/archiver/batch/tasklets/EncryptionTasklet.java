@@ -17,14 +17,21 @@ public class EncryptionTasklet implements Tasklet {
 	public EncryptionTasklet(String path) {
 		this.path = path;
 	}
-	
+
 	@Override
 	public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
-		File file = new File(path + "/archive_24-09-2018.json");
-		byte[] content = FileUtils.readFileToByteArray(file);
-		byte[] encryptedContent = JavaPGP.encrypt(content, JavaPGP.generateKeyPair().getPublic());
-		FileUtils.writeByteArrayToFile(new File(path + "/encrypted/" + file.getName()), encryptedContent);
-		file.delete();
+		File file = new File(path);
+		File[] listOfFiles = file.listFiles();
+		for (int i = 0; i < listOfFiles.length; i++) {
+			if (listOfFiles[i].isFile()) {
+				byte[] content = FileUtils.readFileToByteArray(listOfFiles[i]);
+				byte[] encryptedContent = JavaPGP.encrypt(content, JavaPGP.generateKeyPair().getPublic());
+				FileUtils.writeByteArrayToFile(new File(path + "/encrypted/" + listOfFiles[i].getName()),
+						encryptedContent);
+			} else if (listOfFiles[i].isDirectory()) {
+
+			}
+		}
 		return RepeatStatus.FINISHED;
 	}
 
