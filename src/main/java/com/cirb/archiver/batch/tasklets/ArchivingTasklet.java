@@ -12,7 +12,7 @@ import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cirb.archiver.domain.Archive;
+import com.cirb.archiver.domain.JsonArchive;
 import com.cirb.archiver.domain.Consumer;
 import com.cirb.archiver.domain.Provider;
 import com.cirb.archiver.repositories.ConsumerRepository;
@@ -24,10 +24,10 @@ public class ArchivingTasklet implements Tasklet {
 	
 	private ProviderRepository providerRepository;
 	
-	private ItemWriter<Archive> itemWriter;
+	private ItemWriter<JsonArchive> itemWriter;
 
 	@Autowired
-	public ArchivingTasklet(ConsumerRepository consumerRepository, ProviderRepository providerRepository, ItemWriter<Archive> itemWriter) {
+	public ArchivingTasklet(ConsumerRepository consumerRepository, ProviderRepository providerRepository, ItemWriter<JsonArchive> itemWriter) {
 		this.consumerRepository = consumerRepository;
 		this.providerRepository = providerRepository;
 		this.itemWriter = itemWriter;
@@ -41,13 +41,12 @@ public class ArchivingTasklet implements Tasklet {
 		List<Provider> providers = providerRepository.findByExternalTimestampLessThanEqual(oneYearAgo.getTime());
 		
 		int i  = 1;
-		List<Archive> archives = new ArrayList<>();
+		List<JsonArchive> archives = new ArrayList<>();
 		
 		for(Consumer consumer : consumers) {
 			for(Provider provider : providers) {
 				if(consumer.getTransactionId() != null && consumer.getTransactionId().equals(provider.getTransactionId())) {
-					Archive archive = new Archive(new Date(), consumer, provider);
-					archive.setId(System.currentTimeMillis());
+					JsonArchive archive = new JsonArchive(new Date(), consumer, provider);
 					archives.add(archive);
 					i++;
 				}

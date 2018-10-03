@@ -2,10 +2,10 @@ package com.cirb.archiver.batch.utils;
 
 import org.springframework.batch.item.file.LineMapper;
 
-import com.cirb.archiver.domain.Archive;
+import com.cirb.archiver.domain.JsonArchive;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class ArchiveJsonLineMapper implements LineMapper<Archive> {
+public class ArchiveJsonLineMapper implements LineMapper<JsonArchive> {
 
     private ObjectMapper mapper = new ObjectMapper();
 
@@ -16,8 +16,8 @@ public class ArchiveJsonLineMapper implements LineMapper<Archive> {
      * @see LineMapper#mapLine(String, int)
      */
     @Override
-    public Archive mapLine(String line, int lineNumber) throws Exception {
-        return mapper.readValue(line, Archive.class);
+    public JsonArchive mapLine(String line, int lineNumber) throws Exception {
+        return mapper.readValue(line, JsonArchive.class);
     }
 
 }

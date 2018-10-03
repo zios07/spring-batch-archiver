@@ -2,30 +2,25 @@ package com.cirb.archiver.domain;
 
 import java.util.Date;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
-@Entity
-public class Archive {
+public class JsonArchive {
 
-	@Id @GeneratedValue
+	@JsonInclude(Include.NON_NULL)
 	private Long id;
-	
+
 	private Date date;
-	
-	@OneToOne
+
 	private Consumer consumer;
-	
-	@OneToOne
+
 	private Provider provider;
 
-	public Archive() {
+	public JsonArchive() {
 		super();
 	}
 
-	public Archive(Date date, Consumer consumer, Provider provider) {
+	public JsonArchive(Date date, Consumer consumer, Provider provider) {
 		super();
 		this.date = date;
 		this.consumer = consumer;
@@ -63,5 +58,5 @@ public class Archive {
 	public void setProvider(Provider provider) {
 		this.provider = provider;
 	}
-	
+
 }

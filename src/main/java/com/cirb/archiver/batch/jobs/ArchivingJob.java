@@ -22,10 +22,12 @@ import org.springframework.core.io.FileSystemResource;
 
 import com.cirb.archiver.batch.tasklets.ArchivingTasklet;
 import com.cirb.archiver.batch.tasklets.EncryptionTasklet;
+import com.cirb.archiver.batch.tasklets.SolrTasklet;
 import com.cirb.archiver.batch.utils.ArchiveJsonItemAggregator;
-import com.cirb.archiver.domain.Archive;
+import com.cirb.archiver.domain.JsonArchive;
 import com.cirb.archiver.repositories.ConsumerRepository;
 import com.cirb.archiver.repositories.ProviderRepository;
+import com.cirb.archiver.repositories.SolrArchiveRepository;
 
 @Configuration
 public class ArchivingJob {
@@ -46,20 +48,24 @@ public class ArchivingJob {
 
 	@Autowired
 	private ProviderRepository providerRepository;
+	
+	@Autowired
+	private SolrArchiveRepository solrArchiveRepository;
 
 	@Bean
 	public Job archiverJob() {
-		return jobBuilderFactory
-				.get("archivingJob")
+		return jobBuilderFactory.get("archivingJob")
 				.incrementer(new RunIdIncrementer())
 				.start(archivingStep())
-				.next(encryptingStep())
+				.next(solrStep())
 				.build();
 	}
 
+	// Steps config
+
 	@Bean
-	protected Tasklet encryptionTasklet() {
-		return new EncryptionTasklet(archiveDirectory);
+	protected Step archivingStep() {
+		return stepBuilderFactory.get("archivingStep").tasklet(archivingTasklet()).build();
 	}
 
 	@Bean
@@ -68,22 +74,36 @@ public class ArchivingJob {
 	}
 
 	@Bean
+	protected Step solrStep() {
+		return stepBuilderFactory.get("solrStep").tasklet(solrTasklet(solrArchiveRepository, archiveDirectory)).build();
+	}
+
+	// Tasklets config
+
+	@Bean
 	@StepScope
 	protected Tasklet archivingTasklet() {
 		return new ArchivingTasklet(consumerRepository, providerRepository, writer());
 	}
 
 	@Bean
-	protected Step archivingStep() {
-		return stepBuilderFactory.get("archivingStep").tasklet(archivingTasklet()).build();
+	protected Tasklet encryptionTasklet() {
+		return new EncryptionTasklet(archiveDirectory);
 	}
+	
+	@Bean
+	protected Tasklet solrTasklet(SolrArchiveRepository solrArchiveRepository, String path) {
+		return new SolrTasklet(solrArchiveRepository, path);
+	}
+
+	// ItemWriter config
 
 	@Bean
 	@StepScope
-	public FlatFileItemWriter<Archive> writer() {
-		FlatFileItemWriter<Archive> writer = new FlatFileItemWriter<>();
+	public FlatFileItemWriter<JsonArchive> writer() {
+		FlatFileItemWriter<JsonArchive> writer = new FlatFileItemWriter<>();
 		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
-		String date = sdf.format(new Date());	
+		String date = sdf.format(new Date());
 		writer.setResource(new FileSystemResource(archiveDirectory + "archive_" + date + ".json"));
 		writer.setSaveState(true);
 		writer.open(new ExecutionContext());

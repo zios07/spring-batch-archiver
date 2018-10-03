@@ -11,10 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.cirb.archiver.domain.Archive;
 import com.cirb.archiver.domain.Consumer;
 import com.cirb.archiver.domain.Provider;
-import com.cirb.archiver.repositories.ArchiveRepository;
 import com.cirb.archiver.repositories.ConsumerRepository;
 import com.cirb.archiver.repositories.ProviderRepository;
 
@@ -27,9 +25,6 @@ public class ArchiverBatchApplicationTests {
 
 	@Autowired
 	private ProviderRepository providerRepository;
-
-	@Autowired
-	private ArchiveRepository archiveRepository;
 
 	@Test
 	public void contextLoads() {
@@ -52,12 +47,6 @@ public class ArchiverBatchApplicationTests {
 
 		consumer2 = this.consumerRepository.save(consumer2);
 		provider2 = this.providerRepository.save(provider2);
-
-		Archive archive = new Archive(new Date(), consumer, provider);
-		this.archiveRepository.save(archive);
-
-		Archive archive2 = new Archive(new Date(), consumer2, provider2);
-		this.archiveRepository.save(archive2);
 
 		assertEquals(1, 1);
 	}

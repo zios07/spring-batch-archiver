@@ -5,6 +5,10 @@ db:
   username: postgres
   password: postgres
 
+solr:
+  host: localhost
+  port: 8983
+
 batch:
   archivingCron: 0 * * * * *
   archive-directory: archives/
