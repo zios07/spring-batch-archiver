@@ -18,7 +18,7 @@ public class SolrConfig {
 	
 	@Bean
 	public SolrClient solrClient() {
-		return new HttpSolrClient.Builder("http://" + solrHost + ":" + solrPort).build();
+		return new HttpSolrClient.Builder("http://" + solrHost + ":" + solrPort + "/solr/").build();
 	}
 	
 	@Bean
