@@ -3,6 +3,8 @@ package com.cirb.archiver.batch.jobs;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import javax.sql.DataSource;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.batch.core.Job;
@@ -13,6 +15,8 @@ import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.item.ExecutionContext;
+import org.springframework.batch.item.ItemReader;
+import org.springframework.batch.item.database.builder.JdbcCursorItemReaderBuilder;
 import org.springframework.batch.item.file.FlatFileItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,6 +28,7 @@ import com.cirb.archiver.batch.tasklets.ArchivingTasklet;
 import com.cirb.archiver.batch.tasklets.EncryptionTasklet;
 import com.cirb.archiver.batch.tasklets.SolrTasklet;
 import com.cirb.archiver.batch.utils.ArchiveJsonItemAggregator;
+import com.cirb.archiver.batch.utils.ArchiveRowMapper;
 import com.cirb.archiver.domain.JsonArchive;
 import com.cirb.archiver.repositories.ConsumerRepository;
 import com.cirb.archiver.repositories.ProviderRepository;
@@ -51,12 +56,16 @@ public class ArchivingJob {
 	
 	@Autowired
 	private SolrArchiveRepository solrArchiveRepository;
+	
+	@Autowired
+	private DataSource dataSource;
 
 	@Bean
 	public Job archiverJob() {
 		return jobBuilderFactory.get("archivingJob")
 				.incrementer(new RunIdIncrementer())
 				.start(archivingStep())
+				.next(encryptionStep())
 				.next(solrStep())
 				.build();
 	}
@@ -69,13 +78,13 @@ public class ArchivingJob {
 	}
 
 	@Bean
-	protected Step encryptingStep() {
-		return stepBuilderFactory.get("encryptingStep").tasklet(encryptionTasklet()).build();
-	}
-
-	@Bean
 	protected Step solrStep() {
 		return stepBuilderFactory.get("solrStep").tasklet(solrTasklet(solrArchiveRepository, archiveDirectory)).build();
+	}
+	
+	@Bean
+	protected Step encryptionStep() {
+		return stepBuilderFactory.get("encryptionStep").tasklet(encryptionTasklet()).build();
 	}
 
 	// Tasklets config
@@ -85,17 +94,17 @@ public class ArchivingJob {
 	protected Tasklet archivingTasklet() {
 		return new ArchivingTasklet(consumerRepository, providerRepository, writer());
 	}
-
-	@Bean
-	protected Tasklet encryptionTasklet() {
-		return new EncryptionTasklet(archiveDirectory);
-	}
 	
 	@Bean
 	protected Tasklet solrTasklet(SolrArchiveRepository solrArchiveRepository, String path) {
 		return new SolrTasklet(solrArchiveRepository, path);
 	}
 
+	@Bean
+	protected Tasklet encryptionTasklet() {
+		return new EncryptionTasklet(archiveDirectory);
+	}
+	
 	// ItemWriter config
 
 	@Bean
@@ -109,6 +118,16 @@ public class ArchivingJob {
 		writer.open(new ExecutionContext());
 		writer.setLineAggregator(new ArchiveJsonItemAggregator());
 		return writer;
+	}
+	
+	@Bean
+	@StepScope
+	public ItemReader<Object> reader() {
+		return new JdbcCursorItemReaderBuilder<Object>()
+				.dataSource(dataSource)
+				.rowMapper(new ArchiveRowMapper())
+				.sql("select * from consumer c, providers p where c.transaction_id = p.transaction_id")
+				.build();
 	}
 
 }

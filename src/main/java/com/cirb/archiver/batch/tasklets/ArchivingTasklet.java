@@ -39,7 +39,7 @@ public class ArchivingTasklet implements Tasklet {
 		oneYearAgo.set(oneYearAgo.get(Calendar.YEAR) - 1, oneYearAgo.get(Calendar.MONTH), oneYearAgo.get(Calendar.DATE));
 		List<Consumer> consumers = consumerRepository.findByExternalTimestampLessThanEqual(oneYearAgo.getTime());
 		List<Provider> providers = providerRepository.findByExternalTimestampLessThanEqual(oneYearAgo.getTime());
-		
+		// TODO remove the counter
 		int i  = 1;
 		List<JsonArchive> archives = new ArrayList<>();
 		

@@ -1,37 +1,36 @@
 package com.cirb.archiver.domain;
 
-import java.nio.ByteBuffer;
 import java.util.Date;
 
 import org.apache.solr.client.solrj.beans.Field;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.solr.core.mapping.Indexed;
 import org.springframework.data.solr.core.mapping.SolrDocument;
 
-@SolrDocument(collection = "archive")
+@SolrDocument(collection = "archives")
 public class SolrArchive {
 
 	@Id
 	@Field
-	@Indexed(name = "id", type = "long")
 	private Long id;
 
 	@Field
-	@Indexed(name = "date", type = "date")
 	private Date date;
 
 	@Field
-	@Indexed(name = "content")
-	private ByteBuffer content;
+	private byte[] content;
 	
 	@Field
 	private String extension;
+	
+	@Field
+	private String fileName;
 
-	public SolrArchive(Date date, ByteBuffer content, String extension) {
+	public SolrArchive(Date date, byte[] content, String extension, String fileName) {
 		super();
 		this.date = date;
 		this.content = content;
 		this.extension = extension;
+		this.fileName = fileName;
 	}
 
 	public Long getId() {
@@ -50,11 +49,11 @@ public class SolrArchive {
 		this.date = date;
 	}
 
-	public ByteBuffer getContent() {
+	public byte[] getContent() {
 		return content;
 	}
 
-	public void setContent(ByteBuffer content) {
+	public void setContent(byte[] content) {
 		this.content = content;
 	}
 
@@ -65,5 +64,13 @@ public class SolrArchive {
 	public void setExtension(String extension) {
 		this.extension = extension;
 	}
-	
+
+	public String getFileName() {
+		return fileName;
+	}
+
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+	}
+
 }
