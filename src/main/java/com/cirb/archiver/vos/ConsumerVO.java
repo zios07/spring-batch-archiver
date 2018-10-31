@@ -1,20 +1,17 @@
-package com.cirb.archiver.domain;
+/**
+ * 
+ */
+package com.cirb.archiver.vos;
 
 import java.util.Date;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+/**
+ * @author Zkaoukab
+ *
+ */
+public class ConsumerVO {
 
-@Entity
-@Table(name = "consumer_audit")
-public class Consumer {
 
-	@Id
-	@GeneratedValue
 	private Long id;
 
 	private String action;
@@ -35,10 +32,6 @@ public class Consumer {
 
 	private String keyType;
 
-	private String keyValue;
-
-	private String legalContext;
-
 	private String request;
 
 	private String requestTimestamp;
@@ -49,15 +42,15 @@ public class Consumer {
 
 	private String transactionId;
 	
-	@Temporal(TemporalType.DATE)
 	private Date externalTimestamp;
 
-	public Consumer() {
+	public ConsumerVO() {
 		super();
 	}
 
-	public Consumer(String action, String applicationId, String endPoint, String error, String internalMessageId, String externalMessageId, String externalMessageContext, String institute, String keyType, String keyValue, String legalContext, String request, String requestTimestamp, String response, String responseTimestamp, String transactionId, Date externalTimestamp) {
+	public ConsumerVO(Long id, String action, String applicationId, String endPoint, String error, String internalMessageId, String externalMessageId, String externalMessageContext, String institute, String keyType, String request, String requestTimestamp, String response, String responseTimestamp, String transactionId, Date externalTimestamp) {
 		super();
+		this.id = id;
 		this.action = action;
 		this.applicationId = applicationId;
 		this.endPoint = endPoint;
@@ -67,8 +60,6 @@ public class Consumer {
 		this.externalMessageContext = externalMessageContext;
 		this.institute = institute;
 		this.keyType = keyType;
-		this.keyValue = keyValue;
-		this.legalContext = legalContext;
 		this.request = request;
 		this.requestTimestamp = requestTimestamp;
 		this.response = response;
@@ -157,22 +148,6 @@ public class Consumer {
 		this.keyType = keyType;
 	}
 
-	public String getKeyValue() {
-		return keyValue;
-	}
-
-	public void setKeyValue(String keyValue) {
-		this.keyValue = keyValue;
-	}
-
-	public String getLegalContext() {
-		return legalContext;
-	}
-
-	public void setLegalContext(String legalContext) {
-		this.legalContext = legalContext;
-	}
-
 	public String getRequest() {
 		return request;
 	}
@@ -220,5 +195,6 @@ public class Consumer {
 	public void setExternalTimestamp(Date externalTimestamp) {
 		this.externalTimestamp = externalTimestamp;
 	}
+
 
 }
