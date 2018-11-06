@@ -5,11 +5,6 @@ package com.cirb.archiver.vos;
 
 import java.util.Date;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-
 /**
  * @author Zkaoukab
  *

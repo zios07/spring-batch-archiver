@@ -6,14 +6,16 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 
 import javax.crypto.Cipher;
-import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 
 /**
  * An implementation of PGP encryption (PGP = Pretty Good Privacy)
  */
 public final class JavaPGP {
 
+	private static final String ALGORITHM = "AES";
+	private static final String KEY = "ADBSJHJS12547896ADBSJHJS12547896";
 	private static SecretKey AESKey;
 
 	/**
@@ -36,7 +38,7 @@ public final class JavaPGP {
 		Cipher cipher = Cipher.getInstance("AES");
 		cipher.init(Cipher.ENCRYPT_MODE, secAESKey);
 		byte[] result = cipher.doFinal(message.getBytes("UTF-8"));
-		
+
 		return new String(Base64.getEncoder().encodeToString(result));
 	}
 
@@ -59,10 +61,8 @@ public final class JavaPGP {
 		return new String(result);
 	}
 
-	public static SecretKey generateAESKey() throws NoSuchAlgorithmException {
-		KeyGenerator generator = KeyGenerator.getInstance("AES");
-		generator.init(128); // The AES key size in number of bits
-		return generator.generateKey();
+	public static SecretKey generateAESKey(byte[] key) throws NoSuchAlgorithmException {
+		return new SecretKeySpec(key, ALGORITHM);
 	}
 
 	public SecretKey getAESKey() {
@@ -70,7 +70,7 @@ public final class JavaPGP {
 	}
 
 	public static JavaPGP getInstance() throws NoSuchAlgorithmException {
-		AESKey = generateAESKey();
+		AESKey = generateAESKey(KEY.getBytes());
 		return new JavaPGP();
 	}
 

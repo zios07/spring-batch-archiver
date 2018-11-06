@@ -1,5 +1,6 @@
 package com.cirb.archiver.batch.jobs;
 
+import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -26,6 +27,7 @@ import org.springframework.core.io.FileSystemResource;
 
 import com.cirb.archiver.batch.tasklets.ArchivingTasklet;
 import com.cirb.archiver.batch.tasklets.EncryptionTasklet;
+import com.cirb.archiver.batch.tasklets.FieldsEncryptionStep;
 import com.cirb.archiver.batch.tasklets.SolrTasklet;
 import com.cirb.archiver.batch.utils.ArchiveJsonItemAggregator;
 import com.cirb.archiver.batch.utils.ArchiveRowMapper;
@@ -61,12 +63,12 @@ public class ArchivingJob {
 	private DataSource dataSource;
 
 	@Bean
-	public Job archiverJob() {
+	public Job archiverJob() throws NoSuchAlgorithmException {
 		return jobBuilderFactory.get("archivingJob")
 				.incrementer(new RunIdIncrementer())
-				.start(archivingStep())
-				.next(encryptionStep())
-				.next(solrStep())
+				.start(fieldsEncryptionStep())
+//				.next(encryptionStep())
+//				.next(solrStep())
 				.build();
 	}
 
@@ -75,6 +77,11 @@ public class ArchivingJob {
 	@Bean
 	protected Step archivingStep() {
 		return stepBuilderFactory.get("archivingStep").tasklet(archivingTasklet()).build();
+	}
+	
+	@Bean
+	protected Step fieldsEncryptionStep() throws NoSuchAlgorithmException {
+		return stepBuilderFactory.get("fieldsEncryptionStep").tasklet(fieldsEncryptionTasklet()).build();
 	}
 
 	@Bean
@@ -93,6 +100,11 @@ public class ArchivingJob {
 	@StepScope
 	protected Tasklet archivingTasklet() {
 		return new ArchivingTasklet(consumerRepository, providerRepository, writer());
+	}
+
+	@Bean
+	protected Tasklet fieldsEncryptionTasklet() throws NoSuchAlgorithmException {
+		return new FieldsEncryptionStep(consumerRepository, providerRepository, writer());
 	}
 	
 	@Bean
