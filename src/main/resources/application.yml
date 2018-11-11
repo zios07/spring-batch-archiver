@@ -32,5 +32,9 @@ spring:
               lob:
                 non_contextual_creation: true
 
+jks:
+  path: C:\Users\Zkaoukab\Documents\
+  password: P@ssw0rd
+
 encryption:
   key: cirbAESkey

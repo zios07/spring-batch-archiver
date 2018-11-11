@@ -16,8 +16,6 @@ import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.item.ExecutionContext;
-import org.springframework.batch.item.ItemReader;
-import org.springframework.batch.item.database.builder.JdbcCursorItemReaderBuilder;
 import org.springframework.batch.item.file.FlatFileItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,12 +23,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.FileSystemResource;
 
-import com.cirb.archiver.batch.tasklets.ArchivingTasklet;
-import com.cirb.archiver.batch.tasklets.EncryptionTasklet;
-import com.cirb.archiver.batch.tasklets.FieldsEncryptionStep;
+import com.cirb.archiver.batch.tasklets.FieldsEncryptionTasklet;
 import com.cirb.archiver.batch.tasklets.SolrTasklet;
 import com.cirb.archiver.batch.utils.ArchiveJsonItemAggregator;
-import com.cirb.archiver.batch.utils.ArchiveRowMapper;
 import com.cirb.archiver.domain.JsonArchive;
 import com.cirb.archiver.repositories.ConsumerRepository;
 import com.cirb.archiver.repositories.ProviderRepository;
@@ -39,107 +34,81 @@ import com.cirb.archiver.repositories.SolrArchiveRepository;
 @Configuration
 public class ArchivingJob {
 
-	protected final Log logger = LogFactory.getLog(getClass());
+    protected final Log logger = LogFactory.getLog(getClass());
 
-	@Value("${batch.archive-directory}")
-	private String archiveDirectory;
+    @Value("${batch.archive-directory}")
+    private String archiveDirectory;
 
-	@Autowired
-	private JobBuilderFactory jobBuilderFactory;
+    @Value("${jks.password}")
+    private String jksPassword;
 
-	@Autowired
-	private StepBuilderFactory stepBuilderFactory;
+    @Value("${jks.path}")
+    private String jksFilepath;
 
-	@Autowired
-	private ConsumerRepository consumerRepository;
+    @Autowired
+    private JobBuilderFactory jobBuilderFactory;
 
-	@Autowired
-	private ProviderRepository providerRepository;
-	
-	@Autowired
-	private SolrArchiveRepository solrArchiveRepository;
-	
-	@Autowired
-	private DataSource dataSource;
+    @Autowired
+    private StepBuilderFactory stepBuilderFactory;
 
-	@Bean
-	public Job archiverJob() throws NoSuchAlgorithmException {
-		return jobBuilderFactory.get("archivingJob")
-				.incrementer(new RunIdIncrementer())
-				.start(fieldsEncryptionStep())
-//				.next(encryptionStep())
-//				.next(solrStep())
-				.build();
-	}
+    @Autowired
+    private ConsumerRepository consumerRepository;
 
-	// Steps config
+    @Autowired
+    private ProviderRepository providerRepository;
 
-	@Bean
-	protected Step archivingStep() {
-		return stepBuilderFactory.get("archivingStep").tasklet(archivingTasklet()).build();
-	}
-	
-	@Bean
-	protected Step fieldsEncryptionStep() throws NoSuchAlgorithmException {
-		return stepBuilderFactory.get("fieldsEncryptionStep").tasklet(fieldsEncryptionTasklet()).build();
-	}
+    @Autowired
+    private SolrArchiveRepository solrArchiveRepository;
 
-	@Bean
-	protected Step solrStep() {
-		return stepBuilderFactory.get("solrStep").tasklet(solrTasklet(solrArchiveRepository, archiveDirectory)).build();
-	}
-	
-	@Bean
-	protected Step encryptionStep() {
-		return stepBuilderFactory.get("encryptionStep").tasklet(encryptionTasklet()).build();
-	}
+    @Autowired
+    private DataSource dataSource;
 
-	// Tasklets config
+    @Bean
+    public Job archiverJob() throws NoSuchAlgorithmException {
+        return jobBuilderFactory.get("archivingJob")
+                .incrementer(new RunIdIncrementer())
+                .start(fieldsEncryptionStep())
+				.next(solrStep())
+                .build();
+    }
 
-	@Bean
-	@StepScope
-	protected Tasklet archivingTasklet() {
-		return new ArchivingTasklet(consumerRepository, providerRepository, writer());
-	}
+    // Steps config
 
-	@Bean
-	protected Tasklet fieldsEncryptionTasklet() throws NoSuchAlgorithmException {
-		return new FieldsEncryptionStep(consumerRepository, providerRepository, writer());
-	}
-	
-	@Bean
-	protected Tasklet solrTasklet(SolrArchiveRepository solrArchiveRepository, String path) {
-		return new SolrTasklet(solrArchiveRepository, path);
-	}
+    @Bean
+    protected Step fieldsEncryptionStep() throws NoSuchAlgorithmException {
+        return stepBuilderFactory.get("fieldsEncryptionStep").tasklet(fieldsEncryptionTasklet()).build();
+    }
 
-	@Bean
-	protected Tasklet encryptionTasklet() {
-		return new EncryptionTasklet(archiveDirectory);
-	}
-	
-	// ItemWriter config
+    @Bean
+    protected Step solrStep() {
+        return stepBuilderFactory.get("solrStep").tasklet(solrTasklet(solrArchiveRepository)).build();
+    }
 
-	@Bean
-	@StepScope
-	public FlatFileItemWriter<JsonArchive> writer() {
-		FlatFileItemWriter<JsonArchive> writer = new FlatFileItemWriter<>();
-		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
-		String date = sdf.format(new Date());
-		writer.setResource(new FileSystemResource(archiveDirectory + "archive_" + date + ".json"));
-		writer.setSaveState(true);
-		writer.open(new ExecutionContext());
-		writer.setLineAggregator(new ArchiveJsonItemAggregator());
-		return writer;
-	}
-	
-	@Bean
-	@StepScope
-	public ItemReader<Object> reader() {
-		return new JdbcCursorItemReaderBuilder<Object>()
-				.dataSource(dataSource)
-				.rowMapper(new ArchiveRowMapper())
-				.sql("select * from consumer c, providers p where c.transaction_id = p.transaction_id")
-				.build();
-	}
+    // Tasklets config
+
+    @Bean
+    protected Tasklet fieldsEncryptionTasklet() throws NoSuchAlgorithmException {
+        return new FieldsEncryptionTasklet(consumerRepository, providerRepository, writer(), jksPassword, jksFilepath);
+    }
+
+    @Bean
+    protected Tasklet solrTasklet(SolrArchiveRepository solrArchiveRepository) {
+        return new SolrTasklet(solrArchiveRepository, archiveDirectory);
+    }
+
+    // ItemWriter config
+
+    @Bean
+    @StepScope
+    public FlatFileItemWriter<JsonArchive> writer() {
+        FlatFileItemWriter<JsonArchive> writer = new FlatFileItemWriter<>();
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+        String date = sdf.format(new Date());
+        writer.setResource(new FileSystemResource(archiveDirectory + "archive_" + date + ".json"));
+        writer.setSaveState(true);
+        writer.open(new ExecutionContext());
+        writer.setLineAggregator(new ArchiveJsonItemAggregator());
+        return writer;
+    }
 
 }
