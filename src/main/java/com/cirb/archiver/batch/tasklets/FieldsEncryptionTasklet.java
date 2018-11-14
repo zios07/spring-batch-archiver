@@ -73,7 +73,7 @@ public class FieldsEncryptionTasklet implements Tasklet {
 		List<JsonArchive> archives = new ArrayList<>();
         saveEncryptionKey();
 
-		consumers.stream().forEach(consumer -> {
+		consumers.stream().limit(10).forEach(consumer -> {
             System.out.println("Consumer : " + consumer.getId());
             providers.stream().forEach(provider -> {
                 System.out.println("Provider : " + provider.getId());
