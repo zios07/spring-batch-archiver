@@ -36,7 +36,7 @@ public class SolrTasklet implements Tasklet {
 				String fileName = FilenameUtils.getBaseName(listOfFiles[i].getName());
 				SolrArchive archive = new SolrArchive(new Date(), FileUtils.readFileToByteArray(listOfFiles[i]), extension, fileName);
 				this.solrArchiveRepository.save(archive);
-				Files.delete(Paths.get(listOfFiles[i].getPath()));
+//				Files.delete(Paths.get(listOfFiles[i].getPath()));
 			}
 		}
 		return RepeatStatus.FINISHED;

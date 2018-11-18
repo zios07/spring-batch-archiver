@@ -11,14 +11,14 @@ solr:
 
 batch:
   archivingCron: 0 * * * * *
-  archive-directory: archives/
+  archive-directory: audit-log/
 
 spring:
   batch:
     initialize-schema: always
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://${db.host}:${db.port}/${db.name}
+    url: jdbc:postgresql://${db.host}:${db.port}/${db.name}?stringtype=unspecified
     username: ${db.username}
     password: ${db.password}
   jpa:

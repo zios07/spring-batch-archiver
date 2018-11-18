@@ -68,15 +68,15 @@ public class FieldsEncryptionTasklet implements Tasklet {
 	public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext) throws Exception {
 		Calendar oneYearAgo = Calendar.getInstance();
 		oneYearAgo.set(oneYearAgo.get(Calendar.YEAR) - 1, oneYearAgo.get(Calendar.MONTH), oneYearAgo.get(Calendar.DATE));
-		List<Consumer> consumers = consumerRepository.findByExternalTimestampLessThanEqual(oneYearAgo.getTime());
-		List<Provider> providers = providerRepository.findByExternalTimestampLessThanEqual(oneYearAgo.getTime());
+		List<Consumer> consumers = consumerRepository.findByExternalTimestampLessThanEqualOrderById(oneYearAgo.getTime());
+		List<Provider> providers = providerRepository.findByExternalTimestampLessThanEqualOrderById(oneYearAgo.getTime());
 		List<JsonArchive> archives = new ArrayList<>();
         saveEncryptionKey();
 
-		consumers.stream().limit(10).forEach(consumer -> {
-            System.out.println("Consumer : " + consumer.getId());
+		consumers.stream().forEach(consumer -> {
+            System.out.println(" ****** Consumer : " + consumer.getId());
             providers.stream().forEach(provider -> {
-                System.out.println("Provider : " + provider.getId());
+//                System.out.println("Provider : " + provider.getId());
                 if (consumer.getTransactionId() != null && consumer.getTransactionId().equals(provider.getTransactionId())) {
                     JsonArchive archive = null;
                     try {

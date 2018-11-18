@@ -99,7 +99,6 @@ public class ArchivingJob {
     // ItemWriter config
 
     @Bean
-    @StepScope
     public FlatFileItemWriter<JsonArchive> writer() {
         FlatFileItemWriter<JsonArchive> writer = new FlatFileItemWriter<>();
         SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
