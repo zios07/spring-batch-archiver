@@ -30,6 +30,8 @@ import com.cirb.archiver.domain.JsonArchive;
 import com.cirb.archiver.repositories.ConsumerRepository;
 import com.cirb.archiver.repositories.ProviderRepository;
 import com.cirb.archiver.repositories.SolrArchiveRepository;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.interceptor.DefaultTransactionAttribute;
 
 @Configuration
 public class ArchivingJob {
@@ -68,7 +70,7 @@ public class ArchivingJob {
         return jobBuilderFactory.get("archivingJob")
                 .incrementer(new RunIdIncrementer())
                 .start(fieldsEncryptionStep())
-				.next(solrStep())
+                .next(solrStep())
                 .build();
     }
 
@@ -76,7 +78,7 @@ public class ArchivingJob {
 
     @Bean
     protected Step fieldsEncryptionStep() throws NoSuchAlgorithmException {
-        return stepBuilderFactory.get("fieldsEncryptionStep").tasklet(fieldsEncryptionTasklet()).build();
+        return stepBuilderFactory.get("fieldsEncryptionStep").tasklet(fieldsEncryptionTasklet()).transactionAttribute(new DefaultTransactionAttribute(TransactionDefinition.PROPAGATION_NEVER)).build();
     }
 
     @Bean
