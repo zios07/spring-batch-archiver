@@ -2,8 +2,6 @@ package com.cirb.archiver.domain;
 
 import java.util.Date;
 
-import com.cirb.archiver.vos.ConsumerVO;
-import com.cirb.archiver.vos.ProviderVO;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 

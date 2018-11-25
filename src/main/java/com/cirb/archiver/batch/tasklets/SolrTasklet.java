@@ -15,6 +15,8 @@ import org.springframework.batch.repeat.RepeatStatus;
 import com.cirb.archiver.domain.SolrArchive;
 import com.cirb.archiver.repositories.SolrArchiveRepository;
 
+import static org.apache.commons.io.FileUtils.readFileToByteArray;
+
 public class SolrTasklet implements Tasklet {
 
 	private SolrArchiveRepository solrArchiveRepository;
@@ -34,7 +36,7 @@ public class SolrTasklet implements Tasklet {
 			if (listOfFiles[i].isFile()) {
 				String extension = FilenameUtils.getExtension(listOfFiles[i].getName());
 				String fileName = FilenameUtils.getBaseName(listOfFiles[i].getName());
-				SolrArchive archive = new SolrArchive(new Date(), FileUtils.readFileToByteArray(listOfFiles[i]), extension, fileName);
+        SolrArchive archive = new SolrArchive(new Date(), readFileToByteArray(listOfFiles[i]), extension, fileName);
 				this.solrArchiveRepository.save(archive);
 //				Files.delete(Paths.get(listOfFiles[i].getPath()));
 			}
