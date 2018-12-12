@@ -10,7 +10,7 @@ solr:
   port: 8983
 
 batch:
-  archivingCron: 0 * * * * *
+  archivingCron: 0 0/5 * * * *
   archive-directory: audit-log/
 
 spring:
@@ -22,7 +22,7 @@ spring:
     username: ${db.username}
     password: ${db.password}
   jpa:
-    show-sql: true
+#    show-sql: true
     hibernate:
         ddl-auto: update
     properties:
@@ -33,7 +33,7 @@ spring:
                 non_contextual_creation: true
 
 jks:
-  path: C:\Users\Zkaoukab\Documents\
+  path: C:\Users\zakar\Documents\
   password: P@ssw0rd
 
 encryption:

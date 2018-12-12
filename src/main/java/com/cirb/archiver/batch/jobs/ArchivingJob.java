@@ -1,5 +1,7 @@
 package com.cirb.archiver.batch.jobs;
 
+import java.io.IOException;
+import java.io.Writer;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -16,6 +18,7 @@ import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.item.ExecutionContext;
+import org.springframework.batch.item.file.FlatFileFooterCallback;
 import org.springframework.batch.item.file.FlatFileItemWriter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -109,6 +112,7 @@ public class ArchivingJob {
         writer.setSaveState(true);
         writer.open(new ExecutionContext());
         writer.setLineAggregator(new ArchiveJsonItemAggregator());
+        writer.setFooterCallback(writer1 -> writer1.write("]"));
         return writer;
     }
 
