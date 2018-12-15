@@ -1,25 +1,41 @@
 package com.cirb.archiver.batch.utils;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import com.cirb.archiver.domain.JsonArchive;
+import com.google.gson.Gson;
+import org.springframework.batch.core.ExitStatus;
+import org.springframework.batch.core.StepExecution;
+import org.springframework.batch.core.StepExecutionListener;
 import org.springframework.batch.item.file.transform.LineAggregator;
 
-import com.cirb.archiver.domain.Archive;
-import com.fasterxml.jackson.core.JsonProcessingException;
+public class ArchiveJsonItemAggregator implements LineAggregator<JsonArchive>, StepExecutionListener {
 
-public class ArchiveJsonItemAggregator implements LineAggregator<Archive> {
+  private Gson gson = new Gson();
+  private boolean isFirstObject = true;
 
-	protected final Log logger = LogFactory.getLog(getClass());
-	
-	@Override
-	public String aggregate(Archive item) {
-		String result = null;
-		try {
-			result = JsonUtils.convertObjectToJsonString(item); 
-		} catch (JsonProcessingException jpe) {
-			logger.error("An error has occured. Error message : "+ jpe.getMessage() );
-		}
-		return result;
-	}
+  @Override
+  public String aggregate(final JsonArchive item) {
+    if (isFirstObject) {
+      isFirstObject = false;
+      return "[" + gson.toJson(item);
+    }
+    return "," + gson.toJson(item);
+  }
+
+  public void setGson(final Gson gson) {
+    this.gson = gson;
+  }
+
+  @Override
+  public void beforeStep(final StepExecution stepExecution) {
+    if (stepExecution.getExecutionContext().containsKey("isFirstObject")) {
+      isFirstObject = Boolean.parseBoolean(stepExecution.getExecutionContext().getString("isFirstObject"));
+    }
+  }
+
+  @Override
+  public ExitStatus afterStep(final StepExecution stepExecution) {
+    stepExecution.getExecutionContext().putString("isFirstObject", Boolean.toString(isFirstObject));
+    return null;
+  }
 
 }

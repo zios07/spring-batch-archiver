@@ -11,6 +11,6 @@ import com.cirb.archiver.domain.Provider;
 @Repository
 public interface ProviderRepository extends JpaRepository<Provider, Long> {
 
-	List<Provider> findByExternalTimestampLessThanEqual(Date date);
+	List<Provider> findByExternalTimestampLessThanEqualOrderById(Date date);
 	
 }

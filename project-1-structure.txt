@@ -1,0 +1,65 @@
+│   .gitignore
+│   .travis.yml
+│   pom.xml
+│   README.md
+│
+└───src
+    └───main
+        ├───java
+        │   └───com
+        │       └───cirb
+        │           └───archiver
+        │               │   ArchiverBatchApplication.java
+        │               │
+        │               ├───batch
+        │               │   ├───jobs
+        │               │   │       ArchivingJob.java
+        │               │   │
+        │               │   ├───tasklets
+        │               │   │       FieldsEncryptionTasklet.java
+        │               │   │       SolrTasklet.java
+        │               │   │
+        │               │   └───utils
+        │               │           ArchiveJsonItemAggregator.java
+        │               │           JavaPGP.java
+        │               │           JSONFlatFileFooterCallback.java
+        │               │           JsonUtils.java
+        │               │
+        │               ├───configuration
+        │               │       SolrConfig.java
+        │               │
+        │               ├───domain
+        │               │       Consumer.java
+        │               │       JsonArchive.java
+        │               │       Provider.java
+        │               │       SolrArchive.java
+        │               │
+        │               └───repositories
+        │                       ConsumerRepository.java
+        │                       ProviderRepository.java
+        │                       SolrArchiveRepository.java
+        │
+        └───resources
+                application.yml
+
+
+
+
+*** EXPLANATION ****
+
+Le role de chaque classe:
+
+* ArchiverBatchApplication : Classe principale pour démarrer l'application Spring boot.
+* ArchivingJob: Classe de configuration du job responsable de l'archivage
+* FieldsEncryptionTasklet: Classe de configuration de la tasklet qui a pour role d'extraire les données de la base et de crypter les 2 champs avant de sauvegarder ces données dans un fichier json.
+* SolrTasklet: Configuration de la tasklet qui enregistre le fichier généré par FieldsEncryptionTasklet dans solr.
+
+* ArchiveJsonItemAggregator: Permet de définir comment les objets Java vont être structurés dans le fichier json dans la FieldsEncryptionTasklet.
+* JavaPGP: Contient tous le code métier et algorithme de cryptage/decryptage utilisé lors du chiffrage des 2 champs (institute, keyValue) dans FieldsEncryptionTasklet.
+* JSONFlatFileFooterCallback: Permet de s'assurer que le format du footer du fichier json est valide.
+* SolrConfig: Contient la configuration du solr, avec des valeurs externalisées dans le fichier application.yml
+
+.
+.
+.
+.

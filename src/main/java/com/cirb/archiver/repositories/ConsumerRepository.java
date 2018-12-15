@@ -11,6 +11,6 @@ import com.cirb.archiver.domain.Consumer;
 @Repository
 public interface ConsumerRepository extends JpaRepository<Consumer, Long> {
 
-	List<Consumer> findByExternalTimestampLessThanEqual(Date date);
+	List<Consumer> findByExternalTimestampLessThanEqualOrderById(Date date);
 
 }

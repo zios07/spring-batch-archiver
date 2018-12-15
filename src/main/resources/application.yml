@@ -5,20 +5,24 @@ db:
   username: postgres
   password: postgres
 
+solr:
+  host: localhost
+  port: 8983
+
 batch:
-  archivingCron: 0 * * * * *
-  archive-directory: archives/
+  archivingCron: 0 0/5 * * * *
+  archive-directory: audit-log/
 
 spring:
   batch:
     initialize-schema: always
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://${db.host}:${db.port}/${db.name}
+    url: jdbc:postgresql://${db.host}:${db.port}/${db.name}?stringtype=unspecified
     username: ${db.username}
     password: ${db.password}
   jpa:
-    show-sql: true
+#    show-sql: true
     hibernate:
         ddl-auto: update
     properties:
@@ -27,3 +31,10 @@ spring:
             jdbc:
               lob:
                 non_contextual_creation: true
+
+jks:
+  path: C:\Users\zakar\Documents\
+  password: P@ssw0rd
+
+encryption:
+  key: cirbAESkey

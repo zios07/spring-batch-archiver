@@ -25,48 +25,56 @@ public class Consumer {
 
 	private String error;
 
+	private String internalMessageId;
+
 	private String externalMessageId;
+
+	private String externalMessageContext;
+	
+	private String institute;
 
 	private String keyType;
 
 	private String keyValue;
 
-	private String legalContent;
+	private String legalContext;
 
 	private String request;
 
-	private String requestTimeStamp;
+	private String requestTimestamp;
 
 	private String response;
 
-	private String responseTimeStamp;
+	private String responseTimestamp;
 
 	private String transactionId;
 	
 	@Temporal(TemporalType.DATE)
 	private Date externalTimestamp;
 
+	private transient boolean encrypted;
+
 	public Consumer() {
 		super();
 	}
 
-	public Consumer(String action, String applicationId, String endPoint, String error,
-			String externalMessageId, String keyType, String keyValue, String legalContent, String request,
-			String requestTimeStamp, String response, String responseTimeStamp, String transactionId,
-			Date externalTimestamp) {
+	public Consumer(String action, String applicationId, String endPoint, String error, String internalMessageId, String externalMessageId, String externalMessageContext, String institute, String keyType, String keyValue, String legalContext, String request, String requestTimestamp, String response, String responseTimestamp, String transactionId, Date externalTimestamp) {
 		super();
 		this.action = action;
 		this.applicationId = applicationId;
 		this.endPoint = endPoint;
 		this.error = error;
+		this.internalMessageId = internalMessageId;
 		this.externalMessageId = externalMessageId;
+		this.externalMessageContext = externalMessageContext;
+		this.institute = institute;
 		this.keyType = keyType;
 		this.keyValue = keyValue;
-		this.legalContent = legalContent;
+		this.legalContext = legalContext;
 		this.request = request;
-		this.requestTimeStamp = requestTimeStamp;
+		this.requestTimestamp = requestTimestamp;
 		this.response = response;
-		this.responseTimeStamp = responseTimeStamp;
+		this.responseTimestamp = responseTimestamp;
 		this.transactionId = transactionId;
 		this.externalTimestamp = externalTimestamp;
 	}
@@ -111,12 +119,36 @@ public class Consumer {
 		this.error = error;
 	}
 
+	public String getInternalMessageId() {
+		return internalMessageId;
+	}
+
+	public void setInternalMessageId(String internalMessageId) {
+		this.internalMessageId = internalMessageId;
+	}
+
 	public String getExternalMessageId() {
 		return externalMessageId;
 	}
 
 	public void setExternalMessageId(String externalMessageId) {
 		this.externalMessageId = externalMessageId;
+	}
+
+	public String getExternalMessageContext() {
+		return externalMessageContext;
+	}
+
+	public void setExternalMessageContext(String externalMessageContext) {
+		this.externalMessageContext = externalMessageContext;
+	}
+
+	public String getInstitute() {
+		return institute;
+	}
+
+	public void setInstitute(String institute) {
+		this.institute = institute;
 	}
 
 	public String getKeyType() {
@@ -135,12 +167,12 @@ public class Consumer {
 		this.keyValue = keyValue;
 	}
 
-	public String getLegalContent() {
-		return legalContent;
+	public String getLegalContext() {
+		return legalContext;
 	}
 
-	public void setLegalContent(String legalContent) {
-		this.legalContent = legalContent;
+	public void setLegalContext(String legalContext) {
+		this.legalContext = legalContext;
 	}
 
 	public String getRequest() {
@@ -151,12 +183,12 @@ public class Consumer {
 		this.request = request;
 	}
 
-	public String getRequestTimeStamp() {
-		return requestTimeStamp;
+	public String getRequestTimestamp() {
+		return requestTimestamp;
 	}
 
-	public void setRequestTimeStamp(String requestTimeStamp) {
-		this.requestTimeStamp = requestTimeStamp;
+	public void setRequestTimestamp(String requestTimestamp) {
+		this.requestTimestamp = requestTimestamp;
 	}
 
 	public String getResponse() {
@@ -167,12 +199,12 @@ public class Consumer {
 		this.response = response;
 	}
 
-	public String getResponseTimeStamp() {
-		return responseTimeStamp;
+	public String getResponseTimestamp() {
+		return responseTimestamp;
 	}
 
-	public void setResponseTimeStamp(String responseTimeStamp) {
-		this.responseTimeStamp = responseTimeStamp;
+	public void setResponseTimestamp(String responseTimestamp) {
+		this.responseTimestamp = responseTimestamp;
 	}
 
 	public String getTransactionId() {
@@ -191,4 +223,11 @@ public class Consumer {
 		this.externalTimestamp = externalTimestamp;
 	}
 
+  public boolean isEncrypted() {
+    return encrypted;
+  }
+
+  public void setEncrypted(boolean encrypted) {
+    this.encrypted = encrypted;
+  }
 }
