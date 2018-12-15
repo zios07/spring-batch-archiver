@@ -15,7 +15,7 @@ import com.cirb.archiver.batch.utils.JavaPGP;
 public class EncryptionDemo {
 
 	public static void main(String[] args) throws GeneralSecurityException, UnsupportedEncodingException {
-		String message = "Zach";
+		String message = "CIRB-CIRB   ";
 		JavaPGP javaPGP = JavaPGP.getInstance();
 		System.out.println(javaPGP.encrypt(message));
 		System.out.println(javaPGP.decrypt(javaPGP.encrypt(message), javaPGP.getAESKey()));

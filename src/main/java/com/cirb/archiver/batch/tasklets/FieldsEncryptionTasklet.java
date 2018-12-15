@@ -75,7 +75,9 @@ public class FieldsEncryptionTasklet implements Tasklet {
         if (consumer.getTransactionId() != null && consumer.getTransactionId().equals(provider.getTransactionId())) {
           JsonArchive archive = null;
           try {
-            archive = new JsonArchive(new Date(), encryptConsumerFields(consumer), encryptProviderFields(provider));
+            Consumer c = consumer.isEncrypted() ? consumer : encryptConsumerFields(consumer);
+            Provider p = provider.isEncrypted() ? provider : encryptProviderFields(provider);
+            archive = new JsonArchive(new Date(), c, p);
           } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
           } catch (GeneralSecurityException e) {
@@ -92,9 +94,11 @@ public class FieldsEncryptionTasklet implements Tasklet {
 
   private Consumer encryptConsumerFields(Consumer consumer) throws UnsupportedEncodingException, GeneralSecurityException {
     if (consumer.getInstitute() != null)
-      consumer.setInstitute(encryptor.encrypt(consumer.getInstitute()));
+        consumer.setInstitute(encryptor.encrypt(consumer.getInstitute()));
+
     if (consumer.getLegalContext() != null)
       consumer.setLegalContext(encryptor.encrypt(consumer.getLegalContext()));
+    consumer.setEncrypted(true);
     return consumer;
   }
 
@@ -103,6 +107,7 @@ public class FieldsEncryptionTasklet implements Tasklet {
       provider.setInstitute(encryptor.encrypt(provider.getInstitute()));
     if (provider.getLegalContext() != null)
       provider.setLegalContext(encryptor.encrypt(provider.getLegalContext()));
+    provider.setEncrypted(true);
     return provider;
   }
 

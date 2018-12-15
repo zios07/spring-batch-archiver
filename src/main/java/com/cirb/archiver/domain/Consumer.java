@@ -52,6 +52,8 @@ public class Consumer {
 	@Temporal(TemporalType.DATE)
 	private Date externalTimestamp;
 
+	private transient boolean encrypted;
+
 	public Consumer() {
 		super();
 	}
@@ -221,4 +223,11 @@ public class Consumer {
 		this.externalTimestamp = externalTimestamp;
 	}
 
+  public boolean isEncrypted() {
+    return encrypted;
+  }
+
+  public void setEncrypted(boolean encrypted) {
+    this.encrypted = encrypted;
+  }
 }
