@@ -1,4 +1,4 @@
-# Batch d'archivage
+# Archiving and encryption application with spring boot
 
 ## Main classes
 
